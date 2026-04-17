@@ -6,9 +6,10 @@ import { useTheme } from "next-themes";
 import { useAuthStore } from "@/store/authStore";
 
 const crumbMap: Record<string, string> = {
+  dashboard: "Dashboard",
   admin: "Skillship Admin",
   schools: "Schools Management",
-  subadmins: "SubAdmin Management",
+  "sub-admins": "SubAdmin Management",
   quizzes: "Global Quiz Management",
   "quiz-approvals": "Quiz Approval Panel",
   marketplace: "Marketplace Management",
@@ -27,18 +28,23 @@ const newLabelByParent: Record<string, string> = {
   users: "Create User",
 };
 
+// Segments that are structural but not shown as separate crumbs
+const SKIP_SEGMENTS = new Set(["dashboard"]);
+
 function buildCrumbs(pathname: string) {
   const parts = pathname.split("/").filter(Boolean);
-  if (parts.length === 0 || parts[0] !== "admin") return [];
+  // Must be /dashboard/admin/...
+  if (parts.length < 2 || parts[0] !== "dashboard" || parts[1] !== "admin") return [];
+
   const crumbs: { label: string; href: string }[] = [
-    { label: crumbMap.admin, href: "/admin" },
+    { label: crumbMap.admin, href: "/dashboard/admin" },
   ];
-  let acc = "/admin";
-  for (let i = 1; i < parts.length; i += 1) {
+  let acc = "/dashboard/admin";
+  for (let i = 2; i < parts.length; i += 1) {
     acc += `/${parts[i]}`;
+    if (SKIP_SEGMENTS.has(parts[i])) continue;
     let label: string;
     if (parts[i] === "new") {
-      // Use context from parent segment for a meaningful label
       const parent = parts[i - 1];
       label = newLabelByParent[parent] ?? "New";
     } else {
@@ -46,9 +52,9 @@ function buildCrumbs(pathname: string) {
     }
     crumbs.push({ label, href: acc });
   }
-  // If we're at /admin, second crumb is "Dashboard"
-  if (parts.length === 1) {
-    crumbs.push({ label: "Dashboard", href: "/admin" });
+  // If exactly /dashboard/admin, add "Dashboard" as second crumb
+  if (parts.length === 2) {
+    crumbs.push({ label: "Dashboard", href: "/dashboard/admin" });
   }
   return crumbs;
 }

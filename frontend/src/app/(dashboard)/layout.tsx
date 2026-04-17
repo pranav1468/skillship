@@ -18,11 +18,11 @@ import type { UserRole } from "@/types";
 
 // Map URL prefixes to the role that is allowed to access them.
 const ROLE_PREFIX_MAP: Array<{ prefix: string; role: UserRole }> = [
-  { prefix: "/admin", role: "admin" },
-  { prefix: "/sub-admin", role: "subadmin" },
-  { prefix: "/principal", role: "principal" },
-  { prefix: "/teacher", role: "teacher" },
-  { prefix: "/student", role: "student" },
+  { prefix: "/dashboard/admin", role: "admin" },
+  { prefix: "/dashboard/sub-admin", role: "subadmin" },
+  { prefix: "/dashboard/principal", role: "principal" },
+  { prefix: "/dashboard/teacher", role: "teacher" },
+  { prefix: "/dashboard/student", role: "student" },
 ];
 
 function getRoleForPath(pathname: string): UserRole | null {

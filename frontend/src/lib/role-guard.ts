@@ -8,11 +8,11 @@ import type { UserRole } from "@/types";
 // URL paths match the (dashboard) route group structure in the main repo.
 // subadmin maps to /sub-admin (hyphenated) per the main branch convention.
 export const ROLE_ROUTES: Record<UserRole, string> = {
-  admin: "/admin",
-  subadmin: "/sub-admin",
-  principal: "/principal",
-  teacher: "/teacher",
-  student: "/student",
+  admin: "/dashboard/admin",
+  subadmin: "/dashboard/sub-admin",
+  principal: "/dashboard/principal",
+  teacher: "/dashboard/teacher",
+  student: "/dashboard/student",
 };
 
 export function getDefaultRouteForRole(role: UserRole): string {

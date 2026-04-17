@@ -14,7 +14,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     label: "Dashboard",
-    href: "/admin",
+    href: "/dashboard/admin",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
@@ -23,7 +23,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Schools Management",
-    href: "/admin/schools",
+    href: "/dashboard/admin/schools",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M19 21V11l-6-4" /><path d="M9 9v.01" /><path d="M9 12v.01" /><path d="M9 15v.01" /><path d="M9 18v.01" />
@@ -32,7 +32,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "SubAdmin Management",
-    href: "/admin/subadmins",
+    href: "/dashboard/admin/sub-admins",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
@@ -41,7 +41,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "User Management",
-    href: "/admin/users",
+    href: "/dashboard/admin/users",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /><path d="M12 11v0" />
@@ -50,7 +50,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Global Quiz Management",
-    href: "/admin/quizzes",
+    href: "/dashboard/admin/quizzes",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
@@ -59,7 +59,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Quiz Approval Panel",
-    href: "/admin/quiz-approvals",
+    href: "/dashboard/admin/quiz-approvals",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9 12 11 14 15 10" /><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
@@ -68,7 +68,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Marketplace Management",
-    href: "/admin/marketplace",
+    href: "/dashboard/admin/marketplace",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" /><circle cx="9" cy="19" r="1.5" /><circle cx="17" cy="19" r="1.5" />
@@ -77,7 +77,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Global Analytics",
-    href: "/admin/analytics",
+    href: "/dashboard/admin/analytics",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <line x1="18" x2="18" y1="20" y2="10" /><line x1="12" x2="12" y1="20" y2="4" /><line x1="6" x2="6" y1="20" y2="14" />
@@ -86,7 +86,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Reports",
-    href: "/admin/reports",
+    href: "/dashboard/admin/reports",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" />
@@ -95,7 +95,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Settings",
-    href: "/admin/settings",
+    href: "/dashboard/admin/settings",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3" />
@@ -143,8 +143,8 @@ export function AdminSidebar() {
       <nav className="flex-1 overflow-y-auto px-3 py-2">
         <ul className="space-y-1">
           {navItems.map((item) => {
-            const active = item.href === "/admin"
-              ? pathname === "/admin"
+            const active = item.href === "/dashboard/admin"
+              ? pathname === "/dashboard/admin"
               : pathname.startsWith(item.href);
             return (
               <li key={item.href}>

@@ -4,7 +4,13 @@ import { NextResponse, type NextRequest } from "next/server";
 // Purpose: Next.js Edge Middleware — server-side auth gate for all (dashboard) routes.
 // Owner:   Pranav
 
-const PROTECTED_PREFIXES = ["/admin", "/sub-admin", "/principal", "/teacher", "/student"];
+const PROTECTED_PREFIXES = [
+  "/dashboard/admin",
+  "/dashboard/sub-admin",
+  "/dashboard/principal",
+  "/dashboard/teacher",
+  "/dashboard/student",
+];
 const REFRESH_COOKIE_NAME = "skillship_refresh";
 
 function isProtectedPath(pathname: string): boolean {
@@ -32,5 +38,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/sub-admin/:path*", "/principal/:path*", "/teacher/:path*", "/student/:path*"],
+  matcher: [
+    "/dashboard/admin/:path*",
+    "/dashboard/sub-admin/:path*",
+    "/dashboard/principal/:path*",
+    "/dashboard/teacher/:path*",
+    "/dashboard/student/:path*",
+  ],
 };
