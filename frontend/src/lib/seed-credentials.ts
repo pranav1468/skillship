@@ -2,9 +2,8 @@
 // Seed credentials for frontend preview / demo.
 // DO NOT USE IN PRODUCTION.
 // Backend team: replace this file's usage in `(auth)/login/page.tsx`
-// with a real POST /auth/login call once the Django endpoint is
-// available. The shape of `AuthResponse` is already defined in
-// `@/types`.
+// with a real POST /api/v1/auth/login/ call once the Django endpoint
+// is available. The shape of `AuthResponse` is defined in `@/types`.
 // ============================================================
 
 import type { UserRole } from "@/types";
@@ -13,7 +12,8 @@ export interface SeedCredential {
   userId: string;
   password: string;
   role: UserRole;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
 }
 
@@ -21,36 +21,41 @@ export const seedCredentials: SeedCredential[] = [
   {
     userId: "admin",
     password: "admin123",
-    role: "admin",
-    name: "Aryan Gupta",
+    role: "MAIN_ADMIN",
+    first_name: "Aryan",
+    last_name: "Gupta",
     email: "aryan.gupta@skillship.in",
   },
   {
     userId: "subadmin",
     password: "subadmin123",
-    role: "subadmin",
-    name: "Neha Verma",
+    role: "SUB_ADMIN",
+    first_name: "Neha",
+    last_name: "Verma",
     email: "neha.verma@skillship.in",
   },
   {
     userId: "principal",
     password: "principal123",
-    role: "principal",
-    name: "Dr. Priya Sharma",
+    role: "PRINCIPAL",
+    first_name: "Priya",
+    last_name: "Sharma",
     email: "priya.sharma@school.edu.in",
   },
   {
     userId: "teacher",
     password: "teacher123",
-    role: "teacher",
-    name: "Rahul Iyer",
+    role: "TEACHER",
+    first_name: "Rahul",
+    last_name: "Iyer",
     email: "rahul.iyer@school.edu.in",
   },
   {
     userId: "student",
     password: "student123",
-    role: "student",
-    name: "Ananya Kapoor",
+    role: "STUDENT",
+    first_name: "Ananya",
+    last_name: "Kapoor",
     email: "ananya.kapoor@student.edu.in",
   },
 ];
@@ -65,3 +70,11 @@ export function verifySeedCredential(
   );
   return match ?? null;
 }
+
+export const ROLE_LABEL: Record<UserRole, string> = {
+  MAIN_ADMIN: "Super Admin",
+  SUB_ADMIN: "Sub Admin",
+  PRINCIPAL: "Principal",
+  TEACHER: "Teacher",
+  STUDENT: "Student",
+};

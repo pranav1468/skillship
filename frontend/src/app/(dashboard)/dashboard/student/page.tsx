@@ -21,7 +21,7 @@ const aiTools = [
 ];
 
 export default function StudentDashboard() {
-  const { user } = useAuth();
+  const { displayName } = useAuth();
 
   // Progress ring values — wired to real API in Sprint 2
   const completed = 0;
@@ -35,7 +35,7 @@ export default function StudentDashboard() {
     <div className="space-y-8 p-6 lg:p-8">
       <div>
         <h1 className="text-2xl font-semibold text-[var(--foreground)]">
-          Hey, {user?.name ?? "Student"} 👋
+          Hey, {displayName ?? "Student"} 👋
         </h1>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           Keep going — live progress loads once Sprint 2 backend is ready.

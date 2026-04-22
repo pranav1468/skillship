@@ -59,7 +59,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             return false;
           }
           const data = await res.json();
-          set({ accessToken: data.accessToken });
+          set({ accessToken: data.access });
           return true;
         } catch {
           get().clearAuth();

@@ -6,15 +6,15 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
 import { getDefaultRouteForRole } from "@/lib/role-guard";
-import { seedCredentials, verifySeedCredential } from "@/lib/seed-credentials";
+import { seedCredentials, verifySeedCredential, ROLE_LABEL } from "@/lib/seed-credentials";
 import type { UserRole } from "@/types";
 
 const roleOptions: { value: UserRole; label: string }[] = [
-  { value: "admin", label: "Super Admin" },
-  { value: "subadmin", label: "Sub Admin" },
-  { value: "principal", label: "Principal" },
-  { value: "teacher", label: "Teacher" },
-  { value: "student", label: "Student" },
+  { value: "MAIN_ADMIN", label: "Super Admin" },
+  { value: "SUB_ADMIN", label: "Sub Admin" },
+  { value: "PRINCIPAL", label: "Principal" },
+  { value: "TEACHER", label: "Teacher" },
+  { value: "STUDENT", label: "Student" },
 ];
 
 export default function LoginPage() {
@@ -54,7 +54,15 @@ export default function LoginPage() {
       return;
     }
     login(
-      { id: `seed-${match.role}`, email: match.email, name: match.name, role: match.role },
+      {
+        id: `seed-${match.role}`,
+        email: match.email,
+        username: match.userId,
+        first_name: match.first_name,
+        last_name: match.last_name,
+        role: match.role,
+        school: null,
+      },
       "seed-access-token"
     );
     router.replace(getDefaultRouteForRole(match.role));
@@ -165,7 +173,7 @@ export default function LoginPage() {
           <div className="divide-y divide-amber-100">
             {seedCredentials.map((c) => (
               <button key={c.role} type="button" onClick={() => { setRole(c.role); setUserId(c.userId); setPassword(c.password); }} className="flex w-full items-center justify-between px-4 py-2 text-left transition-colors hover:bg-amber-100">
-                <span className="text-[11px] font-semibold capitalize text-amber-800">{c.role === "subadmin" ? "Sub Admin" : c.role === "admin" ? "Super Admin" : c.role.charAt(0).toUpperCase() + c.role.slice(1)}</span>
+                <span className="text-[11px] font-semibold text-amber-800">{ROLE_LABEL[c.role]}</span>
                 <span className="font-mono text-[10px] text-amber-700">{c.userId} / {c.password}</span>
               </button>
             ))}

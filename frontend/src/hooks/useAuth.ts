@@ -1,10 +1,11 @@
 import { useAuthStore } from "@/store/authStore";
-import type { User, LoginPayload, AuthResponse } from "@/types";
+import { displayName, type User, type LoginPayload, type AuthResponse } from "@/types";
 
 // ============================================================
 // useAuth — Components use this hook, never authStore directly.
 // Login goes through /api/auth/login (Next.js route handler)
-// which proxies Django and sets httpOnly refresh cookie.
+// which proxies Django and sets the HttpOnly refresh cookie.
+// Response shape matches contract: { user, access }.
 // ============================================================
 
 export function useAuth() {
@@ -15,7 +16,6 @@ export function useAuth() {
   const login = async (payload: LoginPayload) => {
     useAuthStore.getState().setLoading(true);
     try {
-      // Next.js API route: sets httpOnly refresh cookie, returns { user, accessToken }
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -24,11 +24,11 @@ export function useAuth() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err?.detail ?? "Login failed");
+        throw new Error(err?.message ?? err?.detail ?? "Login failed");
       }
 
       const data: AuthResponse = await res.json();
-      useAuthStore.getState().login(data.user, data.accessToken);
+      useAuthStore.getState().login(data.user, data.access);
       return data.user;
     } catch (error) {
       useAuthStore.getState().setLoading(false);
@@ -37,7 +37,6 @@ export function useAuth() {
   };
 
   const logout = async () => {
-    // Blacklist refresh token via Next.js route, then clear client state
     await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
     useAuthStore.getState().clearAuth();
     if (typeof window !== "undefined") window.location.href = "/login";
@@ -53,7 +52,8 @@ export function useAuth() {
     isAuthenticated,
     isLoading,
     role: user?.role ?? null,
-    schoolId: user?.schoolId ?? null,   // T-033: explicit schoolId for academic screens
+    school: user?.school ?? null,
+    displayName: user ? displayName(user) : null,
     login,
     logout,
     hasRole,

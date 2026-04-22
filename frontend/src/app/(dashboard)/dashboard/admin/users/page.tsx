@@ -7,33 +7,43 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { useToast } from "@/components/ui/Toast";
 
-type Role = "all" | "admin" | "subadmin" | "principal" | "teacher" | "student";
+import type { UserRole } from "@/types";
+
+type Role = "all" | UserRole;
 
 interface UserRow {
   name: string;
   email: string;
-  role: Exclude<Role, "all">;
+  role: UserRole;
   school: string;
   joined: string;
   status: "Active" | "Suspended" | "Invited";
 }
 
 const users: UserRow[] = [
-  { name: "Aryan Gupta", email: "aryan.gupta@skillship.in", role: "admin", school: "Skillship HQ", joined: "Feb 12, 2025", status: "Active" },
-  { name: "Neha Verma", email: "neha.verma@skillship.in", role: "subadmin", school: "North India region", joined: "Mar 2, 2025", status: "Active" },
-  { name: "Dr. Priya Sharma", email: "priya.sharma@dps.edu.in", role: "principal", school: "Delhi Public School, Noida", joined: "Jan 20, 2025", status: "Active" },
-  { name: "Rahul Iyer", email: "rahul.iyer@kv21.edu.in", role: "teacher", school: "Kendriya Vidyalaya, Sector 21", joined: "Apr 5, 2025", status: "Active" },
-  { name: "Ananya Kapoor", email: "ananya.k@student.edu.in", role: "student", school: "St. Xavier's High School", joined: "Jul 11, 2025", status: "Active" },
-  { name: "Karthik Reddy", email: "karthik@vidyanikethan.edu.in", role: "teacher", school: "Vidya Niketan School", joined: "Jun 28, 2025", status: "Invited" },
-  { name: "Sana Mehta", email: "sana.mehta@suns.edu.in", role: "student", school: "Sunrise Academy", joined: "Aug 9, 2025", status: "Suspended" },
+  { name: "Aryan Gupta", email: "aryan.gupta@skillship.in", role: "MAIN_ADMIN", school: "Skillship HQ", joined: "Feb 12, 2025", status: "Active" },
+  { name: "Neha Verma", email: "neha.verma@skillship.in", role: "SUB_ADMIN", school: "North India region", joined: "Mar 2, 2025", status: "Active" },
+  { name: "Dr. Priya Sharma", email: "priya.sharma@dps.edu.in", role: "PRINCIPAL", school: "Delhi Public School, Noida", joined: "Jan 20, 2025", status: "Active" },
+  { name: "Rahul Iyer", email: "rahul.iyer@kv21.edu.in", role: "TEACHER", school: "Kendriya Vidyalaya, Sector 21", joined: "Apr 5, 2025", status: "Active" },
+  { name: "Ananya Kapoor", email: "ananya.k@student.edu.in", role: "STUDENT", school: "St. Xavier's High School", joined: "Jul 11, 2025", status: "Active" },
+  { name: "Karthik Reddy", email: "karthik@vidyanikethan.edu.in", role: "TEACHER", school: "Vidya Niketan School", joined: "Jun 28, 2025", status: "Invited" },
+  { name: "Sana Mehta", email: "sana.mehta@suns.edu.in", role: "STUDENT", school: "Sunrise Academy", joined: "Aug 9, 2025", status: "Suspended" },
 ];
 
-const roleColor: Record<Exclude<Role, "all">, string> = {
-  admin: "bg-primary/10 text-primary border-primary/20",
-  subadmin: "bg-teal-50 text-teal-700 border-teal-200",
-  principal: "bg-violet-50 text-violet-700 border-violet-200",
-  teacher: "bg-amber-50 text-amber-700 border-amber-200",
-  student: "bg-slate-50 text-slate-600 border-slate-200",
+const roleColor: Record<UserRole, string> = {
+  MAIN_ADMIN: "bg-primary/10 text-primary border-primary/20",
+  SUB_ADMIN: "bg-teal-50 text-teal-700 border-teal-200",
+  PRINCIPAL: "bg-violet-50 text-violet-700 border-violet-200",
+  TEACHER: "bg-amber-50 text-amber-700 border-amber-200",
+  STUDENT: "bg-slate-50 text-slate-600 border-slate-200",
+};
+
+const roleLabel: Record<UserRole, string> = {
+  MAIN_ADMIN: "Super Admin",
+  SUB_ADMIN: "Sub Admin",
+  PRINCIPAL: "Principal",
+  TEACHER: "Teacher",
+  STUDENT: "Student",
 };
 
 const statusColor: Record<UserRow["status"], string> = {
@@ -44,11 +54,11 @@ const statusColor: Record<UserRow["status"], string> = {
 
 const roleTabDefs: { label: string; value: Role }[] = [
   { label: "All", value: "all" },
-  { label: "Super Admin", value: "admin" },
-  { label: "Sub Admins", value: "subadmin" },
-  { label: "Principals", value: "principal" },
-  { label: "Teachers", value: "teacher" },
-  { label: "Students", value: "student" },
+  { label: "Super Admin", value: "MAIN_ADMIN" },
+  { label: "Sub Admins", value: "SUB_ADMIN" },
+  { label: "Principals", value: "PRINCIPAL" },
+  { label: "Teachers", value: "TEACHER" },
+  { label: "Students", value: "STUDENT" },
 ];
 
 export default function UserManagementPage() {
@@ -180,8 +190,8 @@ export default function UserManagementPage() {
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold capitalize ${roleColor[u.role]}`}>
-                        {u.role === "subadmin" ? "Sub Admin" : u.role === "admin" ? "Super Admin" : u.role}
+                      <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${roleColor[u.role]}`}>
+                        {roleLabel[u.role]}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-[var(--muted-foreground)]">{u.school}</td>

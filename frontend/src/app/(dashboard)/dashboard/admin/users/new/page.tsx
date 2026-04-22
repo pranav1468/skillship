@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 
 const roles = [
   {
-    value: "subadmin",
+    value: "SUB_ADMIN",
     label: "Sub Admin",
     description: "Manages a set of schools and their workflows.",
-    href: "/dashboard/admin/users/new/subadmin",
+    href: "/dashboard/admin/users/new/SUB_ADMIN",
     tint: "bg-amber-50 text-amber-600",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -17,10 +17,10 @@ const roles = [
     ),
   },
   {
-    value: "teacher",
+    value: "TEACHER",
     label: "Teacher",
     description: "Creates quizzes, reviews submissions, runs workshops.",
-    href: "/dashboard/admin/users/new/teacher",
+    href: "/dashboard/admin/users/new/TEACHER",
     tint: "bg-primary/10 text-primary",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -29,10 +29,10 @@ const roles = [
     ),
   },
   {
-    value: "principal",
+    value: "PRINCIPAL",
     label: "Principal",
     description: "Oversees school performance and teacher activity.",
-    href: "/dashboard/admin/users/new/principal",
+    href: "/dashboard/admin/users/new/PRINCIPAL",
     tint: "bg-violet-50 text-violet-600",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -41,10 +41,10 @@ const roles = [
     ),
   },
   {
-    value: "student",
+    value: "STUDENT",
     label: "Student",
     description: "Takes quizzes, accesses courses, views progress.",
-    href: "/dashboard/admin/users/new/student",
+    href: "/dashboard/admin/users/new/STUDENT",
     tint: "bg-teal-50 text-teal-600",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

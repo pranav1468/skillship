@@ -6,18 +6,26 @@ import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 
 const STUB = {
-  name: "Dr. Anjali Mehta", email: "anjali.mehta@dps.in",
-  role: "principal", school: "Delhi Public School, Noida",
+  first_name: "Anjali", last_name: "Mehta", email: "anjali.mehta@dps.in",
+  role: "PRINCIPAL", school: "Delhi Public School, Noida",
   phone: "+91 98765 43210", joinedAt: "March 12, 2025", status: "Active",
   lastLogin: "2 hours ago",
 };
 
 const roleColors: Record<string, string> = {
-  admin: "bg-violet-100 text-violet-700",
-  subadmin: "bg-amber-100 text-amber-700",
-  principal: "bg-teal-100 text-teal-700",
-  teacher: "bg-primary/10 text-primary",
-  student: "bg-blue-100 text-blue-700",
+  MAIN_ADMIN: "bg-violet-100 text-violet-700",
+  SUB_ADMIN: "bg-amber-100 text-amber-700",
+  PRINCIPAL: "bg-teal-100 text-teal-700",
+  TEACHER: "bg-primary/10 text-primary",
+  STUDENT: "bg-blue-100 text-blue-700",
+};
+
+const roleLabels: Record<string, string> = {
+  MAIN_ADMIN: "Super Admin",
+  SUB_ADMIN: "Sub Admin",
+  PRINCIPAL: "Principal",
+  TEACHER: "Teacher",
+  STUDENT: "Student",
 };
 
 const Field = ({ label, value }: { label: string; value: string }) => (
@@ -34,6 +42,8 @@ export default function UserDetailPage() {
   const [user, setUser] = useState({ ...STUB });
   const [editing, setEditing] = useState(false);
   const [suspendOpen, setSuspendOpen] = useState(false);
+
+  const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
 
   function save() {
     // TODO: PATCH /api/v1/users/{id}/
@@ -56,7 +66,7 @@ export default function UserDetailPage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
         <div>
-          <h1 className="text-xl font-bold text-[var(--foreground)]">{user.name}</h1>
+          <h1 className="text-xl font-bold text-[var(--foreground)]">{fullName}</h1>
           <p className="text-xs text-[var(--muted-foreground)]">User ID: {id} · <Link href="/dashboard/admin/users" className="text-primary hover:underline">All Users</Link></p>
         </div>
         <div className="ml-auto flex gap-2">
@@ -82,13 +92,13 @@ export default function UserDetailPage() {
       <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
         <div className="flex items-center gap-4 mb-6">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-xl font-bold text-white">
-            {user.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+            {fullName.split(" ").map((n) => n[0]).join("").slice(0, 2) || "U"}
           </div>
           <div>
-            <p className="font-bold text-[var(--foreground)]">{user.name}</p>
+            <p className="font-bold text-[var(--foreground)]">{fullName}</p>
             <div className="mt-1 flex gap-2">
               <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${roleColors[user.role] ?? "bg-gray-100 text-gray-600"}`}>
-                {user.role}
+                {roleLabels[user.role] ?? user.role}
               </span>
               <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${user.status === "Active" ? "bg-primary/10 text-primary" : "bg-red-100 text-red-600"}`}>
                 {user.status}
@@ -99,7 +109,7 @@ export default function UserDetailPage() {
 
         {editing ? (
           <div className="grid gap-4 sm:grid-cols-2">
-            {(["name","email","phone","school"] as const).map((k) => (
+            {(["first_name","last_name","email","phone","school"] as const).map((k) => (
               <div key={k} className="flex flex-col gap-1">
                 <label className="text-[11px] font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">{k}</label>
                 <input value={user[k]} onChange={(e) => setUser((u) => ({ ...u, [k]: e.target.value }))}
@@ -127,8 +137,8 @@ export default function UserDetailPage() {
             </h3>
             <p className="mt-2 text-sm text-[var(--muted-foreground)]">
               {user.status === "Active"
-                ? `${user.name} will lose access immediately.`
-                : `${user.name} will regain access immediately.`}
+                ? `${fullName} will lose access immediately.`
+                : `${fullName} will regain access immediately.`}
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button type="button" onClick={() => setSuspendOpen(false)}

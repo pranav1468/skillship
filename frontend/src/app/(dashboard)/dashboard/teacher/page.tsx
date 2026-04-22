@@ -21,14 +21,14 @@ const statusColor: Record<string, string> = {
 };
 
 export default function TeacherDashboard() {
-  const { user } = useAuth();
+  const { displayName } = useAuth();
 
   return (
     <div className="space-y-8 p-6 lg:p-8">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-[var(--foreground)]">
-            Welcome back, {user?.name ?? "Teacher"}
+            Welcome back, {displayName ?? "Teacher"}
           </h1>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
             Your classes and quiz activity — live data in Sprint 2.

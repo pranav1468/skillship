@@ -6,13 +6,13 @@ import type { UserRole } from "@/types";
 // ============================================================
 
 // URL paths match the (dashboard) route group structure in the main repo.
-// subadmin maps to /sub-admin (hyphenated) per the main branch convention.
+// Role constants are uppercase (backend contract); URL slugs stay lowercase.
 export const ROLE_ROUTES: Record<UserRole, string> = {
-  admin: "/dashboard/admin",
-  subadmin: "/dashboard/sub-admin",
-  principal: "/dashboard/principal",
-  teacher: "/dashboard/teacher",
-  student: "/dashboard/student",
+  MAIN_ADMIN: "/dashboard/admin",
+  SUB_ADMIN:  "/dashboard/sub-admin",
+  PRINCIPAL:  "/dashboard/principal",
+  TEACHER:    "/dashboard/teacher",
+  STUDENT:    "/dashboard/student",
 };
 
 export function getDefaultRouteForRole(role: UserRole): string {

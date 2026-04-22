@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useAuthStore } from "@/store/authStore";
+import { displayName } from "@/types";
 import { useToast } from "@/components/ui/Toast";
 
 const crumbMap: Record<string, string> = {
@@ -148,10 +149,10 @@ export function AdminTopbar() {
       {/* Profile */}
       <div className="flex items-center gap-2.5 rounded-full border border-[var(--border)] bg-white px-1 py-1 pr-3 shadow-sm">
         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-white">
-          {(user?.name ?? "A").charAt(0).toUpperCase()}
+          {(user ? displayName(user) : "A").charAt(0).toUpperCase()}
         </div>
         <span className="text-xs font-semibold text-[var(--foreground)]">
-          {user?.name ?? "Admin"}
+          {user ? displayName(user) : "Admin"}
         </span>
       </div>
     </header>

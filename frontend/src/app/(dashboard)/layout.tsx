@@ -18,11 +18,11 @@ import type { UserRole } from "@/types";
 
 // Map URL prefixes to the role that is allowed to access them.
 const ROLE_PREFIX_MAP: Array<{ prefix: string; role: UserRole }> = [
-  { prefix: "/dashboard/admin", role: "admin" },
-  { prefix: "/dashboard/sub-admin", role: "subadmin" },
-  { prefix: "/dashboard/principal", role: "principal" },
-  { prefix: "/dashboard/teacher", role: "teacher" },
-  { prefix: "/dashboard/student", role: "student" },
+  { prefix: "/dashboard/admin", role: "MAIN_ADMIN" },
+  { prefix: "/dashboard/sub-admin", role: "SUB_ADMIN" },
+  { prefix: "/dashboard/principal", role: "PRINCIPAL" },
+  { prefix: "/dashboard/teacher", role: "TEACHER" },
+  { prefix: "/dashboard/student", role: "STUDENT" },
 ];
 
 function getRoleForPath(pathname: string): UserRole | null {
@@ -33,7 +33,7 @@ function getRoleForPath(pathname: string): UserRole | null {
 }
 
 // Roles that use the AdminSidebar + AdminTopbar shell.
-const ADMIN_SHELL_ROLES: UserRole[] = ["admin", "subadmin"];
+const ADMIN_SHELL_ROLES: UserRole[] = ["MAIN_ADMIN", "SUB_ADMIN"];
 
 export default function DashboardLayout({
   children,

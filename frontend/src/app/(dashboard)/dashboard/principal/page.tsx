@@ -10,13 +10,13 @@ const stats = [
 ];
 
 export default function PrincipalDashboard() {
-  const { user } = useAuth();
+  const { displayName } = useAuth();
 
   return (
     <div className="space-y-8 p-6 lg:p-8">
       <div>
         <h1 className="text-2xl font-semibold text-[var(--foreground)]">
-          Welcome back, {user?.name ?? "Principal"}
+          Welcome back, {displayName ?? "Principal"}
         </h1>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           School overview — live data connects once Sprint 2 backend lands.

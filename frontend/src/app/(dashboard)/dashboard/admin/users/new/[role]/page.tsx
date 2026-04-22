@@ -7,37 +7,39 @@ import Link from "next/link";
 import { PageHeader } from "@/components/admin/PageHeader";
 
 const roleMeta: Record<string, { label: string; color: string; fields: string[] }> = {
-  subadmin: {
+  SUB_ADMIN: {
     label: "Sub Admin",
     color: "from-amber-400 to-orange-400",
-    fields: ["full_name", "email", "phone", "region", "password"],
+    fields: ["first_name", "last_name", "email", "phone", "region", "password"],
   },
-  teacher: {
+  TEACHER: {
     label: "Teacher",
     color: "from-primary to-accent",
-    fields: ["full_name", "email", "phone", "school", "subject", "password"],
+    fields: ["first_name", "last_name", "email", "phone", "school", "subject", "password"],
   },
-  principal: {
+  PRINCIPAL: {
     label: "Principal",
     color: "from-violet-500 to-fuchsia-400",
-    fields: ["full_name", "email", "phone", "school", "password"],
+    fields: ["first_name", "last_name", "email", "phone", "school", "password"],
   },
-  student: {
+  STUDENT: {
     label: "Student",
     color: "from-teal-500 to-cyan-400",
-    fields: ["full_name", "email", "phone", "school", "class_grade", "password"],
+    fields: ["first_name", "last_name", "email", "phone", "school", "admission_number", "class_grade", "password"],
   },
 };
 
 const fieldMeta: Record<string, { label: string; type: string; placeholder: string }> = {
-  full_name:   { label: "Full Name",           type: "text",     placeholder: "e.g. Rahul Iyer" },
-  email:       { label: "Email Address",        type: "email",    placeholder: "e.g. rahul@school.edu.in" },
-  phone:       { label: "Phone Number",         type: "tel",      placeholder: "+91 98765 43210" },
-  region:      { label: "Region",               type: "text",     placeholder: "e.g. North India" },
-  school:      { label: "School Name",          type: "text",     placeholder: "e.g. Delhi Public School, Noida" },
-  subject:     { label: "Primary Subject",      type: "text",     placeholder: "e.g. Mathematics" },
-  class_grade: { label: "Class / Grade",        type: "text",     placeholder: "e.g. Class 9-A" },
-  password:    { label: "Temporary Password",   type: "password", placeholder: "Min. 8 characters" },
+  first_name:       { label: "First Name",        type: "text",     placeholder: "e.g. Rahul" },
+  last_name:        { label: "Last Name",         type: "text",     placeholder: "e.g. Iyer" },
+  email:            { label: "Email Address",     type: "email",    placeholder: "e.g. rahul@school.edu.in" },
+  phone:            { label: "Phone Number",      type: "tel",      placeholder: "+91 98765 43210" },
+  region:           { label: "Region",            type: "text",     placeholder: "e.g. North India" },
+  school:           { label: "School Name",       type: "text",     placeholder: "e.g. Delhi Public School, Noida" },
+  subject:          { label: "Primary Subject",   type: "text",     placeholder: "e.g. Mathematics" },
+  admission_number: { label: "Admission Number",  type: "text",     placeholder: "e.g. 2024/STD/001" },
+  class_grade:      { label: "Class / Grade",     type: "text",     placeholder: "e.g. Class 9-A" },
+  password:         { label: "Temporary Password", type: "password", placeholder: "Min. 8 characters" },
 };
 
 function validateFields(fields: string[], values: Record<string, string>): Record<string, string> {
@@ -116,7 +118,7 @@ export default function CreateUserRolePage() {
           </div>
           <h2 className="mt-5 text-xl font-bold text-[var(--foreground)]">User Created!</h2>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            <span className="font-semibold text-[var(--foreground)]">{values.full_name || "The new user"}</span> has been added as a{" "}
+            <span className="font-semibold text-[var(--foreground)]">{[values.first_name, values.last_name].filter(Boolean).join(" ") || "The new user"}</span> has been added as a{" "}
             <span className="font-semibold text-primary">{meta.label}</span>. Connect the backend to enable login and email delivery.
           </p>
           <div className="mt-7 flex gap-3">

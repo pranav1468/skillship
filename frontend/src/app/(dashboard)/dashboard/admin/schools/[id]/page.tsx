@@ -5,14 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 
-// Stub data — replace with GET /api/v1/schools/{id}/ when Django lands
+// Stub data — replace with GET /api/v1/schools/{id}/ when Django lands.
+// Note: `plan` is intentionally absent — not part of the API contract.
 const STUB: Record<string, {
-  name: string; plan: string; principal: string; email: string;
+  name: string; principal: string; email: string;
   phone: string; city: string; state: string; gstin: string;
   students: number; teachers: number; classes: number; status: string;
 }> = {
   default: {
-    name: "Delhi Public School, Noida", plan: "Plan 02 — Agentic AI",
+    name: "Delhi Public School, Noida",
     principal: "Dr. Anjali Mehta", email: "dps.noida@skillship.in",
     phone: "+91 98765 43210", city: "Noida", state: "Uttar Pradesh",
     gstin: "09AABCD1234E1Z5", students: 1240, teachers: 68, classes: 32, status: "Active",
@@ -89,26 +90,17 @@ export default function SchoolDetailPage() {
         <h2 className="mb-5 text-[15px] font-semibold text-[var(--foreground)]">School Details</h2>
         {editing ? (
           <div className="grid gap-4 sm:grid-cols-2">
-            {(["name","plan","principal","email","phone","city","state","gstin"] as const).map((k) => (
+            {(["name","principal","email","phone","city","state","gstin"] as const).map((k) => (
               <div key={k} className="flex flex-col gap-1">
                 <label className="text-[11px] font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">{k}</label>
-                {k === "plan" ? (
-                  <select value={form[k]} onChange={set(k)}
-                    className="rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
-                    <option>Plan 01 — Standard</option>
-                    <option>Plan 02 — Agentic AI</option>
-                  </select>
-                ) : (
-                  <input value={form[k] as string} onChange={set(k)}
-                    className="rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
-                )}
+                <input value={form[k] as string} onChange={set(k)}
+                  className="rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
               </div>
             ))}
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="School Name" value={form.name} />
-            <Field label="Plan" value={form.plan} />
             <Field label="Principal" value={form.principal} />
             <Field label="Email" value={form.email} />
             <Field label="Phone" value={form.phone} />

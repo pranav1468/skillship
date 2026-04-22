@@ -6,40 +6,42 @@
 // ============================================================
 
 // === Core Enums ===
+// Role values mirror `apps.accounts.models.User.Role` on the backend (uppercase).
+// URL slugs stay lowercase — mapping lives in `lib/role-guard.ts`.
 
-export type UserRole = "admin" | "subadmin" | "principal" | "teacher" | "student";
+export type UserRole = "MAIN_ADMIN" | "SUB_ADMIN" | "PRINCIPAL" | "TEACHER" | "STUDENT";
 
 // === Domain Models ===
+// Backend sends first_name/last_name separately; use `displayName(user)` for UI.
 
 export interface User {
   id: string;
   email: string;
-  name: string;
+  username: string;
+  first_name: string;
+  last_name: string;
   role: UserRole;
-  avatar?: string;
-  schoolId?: string;
-  createdAt?: string;
+  school: string | null;
+  phone?: string;
+  admission_number?: string;
 }
+
+export const displayName = (u: Pick<User, "first_name" | "last_name" | "username">) =>
+  [u.first_name, u.last_name].filter(Boolean).join(" ") || u.username;
 
 export interface School {
   id: string;
   name: string;
-  code: string;
+  slug: string;
+  board: "CBSE" | "ICSE" | "STATE";
+  city?: string;
+  state?: string;
   address?: string;
-  plan?: "free" | "pro" | "enterprise";
+  is_active: boolean;
+  subscription_expires_at?: string;
 }
 
 // === API Contract Types ===
-
-/**
- * Standard API response envelope.
- * Backend may evolve this — keep loose with optional message.
- */
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
 
 export interface ApiError {
   code: string;
@@ -47,28 +49,25 @@ export interface ApiError {
   errors?: Record<string, string[]>;
 }
 
+// DRF PageNumberPagination shape — matches backend StandardPagination.
 export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 }
 
 // === Auth Types ===
+// Refresh token lives in an HttpOnly cookie set by Django — never in the body.
 
 export interface AuthResponse {
   user: User;
-  accessToken: string;
-  refreshToken?: string; // Optional — backend may not send on every response
+  access: string;
 }
 
 export interface LoginPayload {
   email: string;
   password: string;
-}
-
-export interface RefreshPayload {
-  refreshToken: string;
 }
 
 // === Navigation Types ===
