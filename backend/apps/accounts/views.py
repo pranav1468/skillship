@@ -25,15 +25,27 @@ HttpOnly cookies. This is what keeps it safe from XSS.
 
 from django.conf import settings
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import LoginSerializer, UserSerializer
+from apps.common.permissions import Role
+
+from .models import User
+from .permissions import CanManageUsers
+from .serializers import (
+    LoginSerializer,
+    PasswordSetSerializer,
+    UserCreateSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+)
 
 REFRESH_COOKIE_NAME = "refresh"
 REFRESH_COOKIE_PATH = "/api/v1/auth/"
@@ -154,3 +166,56 @@ class MeView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+# ── /api/v1/users/ — user management surface ────────────────────────────────
+
+
+class UsersViewSet(ModelViewSet):
+    """CRUD for User resources, plus a /set-password/ action.
+
+    Tenant scoping:
+        MAIN_ADMIN sees every user. PRINCIPAL sees only users in their own
+        school. The surface is closed to anyone else by `CanManageUsers`,
+        so the queryset filter is the second line of defence — never the only one.
+
+    Why a custom get_queryset() instead of TenantScopedViewSet:
+        Users have school=NULL for MAIN_ADMIN, and TenantScopedViewSet's
+        unconditional `school_id=…` filter would silently hide any future
+        platform-level user from a principal who somehow reached the surface.
+        Spelling out the role gate here is clearer than a generic helper.
+    """
+
+    permission_classes = [IsAuthenticated, CanManageUsers]
+    lookup_field = "id"
+
+    def get_queryset(self):
+        actor = self.request.user
+        qs = User.objects.all().order_by("-date_joined")
+        if actor.role == Role.MAIN_ADMIN:
+            return qs
+        # PRINCIPAL: scoped to own school. Anyone else never reaches here.
+        return qs.filter(school_id=actor.school_id)
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return UserCreateSerializer
+        if self.action in {"update", "partial_update"}:
+            return UserUpdateSerializer
+        if self.action == "set_password":
+            return PasswordSetSerializer
+        return UserSerializer
+
+    @action(detail=True, methods=["post"], url_path="set-password")
+    def set_password(self, request, id=None):
+        """Reset a user's password. Returns 204 on success.
+
+        Body: {"password": "<new password>"}
+        Permission: CanManageUsers (MAIN_ADMIN any; PRINCIPAL same-school).
+        """
+        target = self.get_object()  # invokes has_object_permission via DRF
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        target.set_password(serializer.validated_data["password"])
+        target.save(update_fields=["password"])
+        return Response(status=status.HTTP_204_NO_CONTENT)
