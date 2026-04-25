@@ -1,9 +1,55 @@
 """
 File:    ai-service/app/rag/retriever.py
 Purpose: Top-k semantic search over pgvector, scoped to a school_id.
-Why:     Tenant isolation applies to RAG too — school A must never retrieve school B's chunks.
-Owner:   Navanish
-TODO:    retrieve(question, school_id, course_id=None, k=5) -> list[{chunk, content_id, score}]:
-           - embed(question) -> vector
-           - SELECT ... FROM content_chunks WHERE school_id = %s ORDER BY vector <-> %s LIMIT k.
 """
+
+from __future__ import annotations
+import uuid
+import logging
+from typing import Optional
+
+import psycopg
+from google import genai
+
+from app.rag.embedder import embed
+
+logger = logging.getLogger(__name__)
+
+
+async def retrieve(
+    db: psycopg.AsyncConnection,
+    client: genai.Client,
+    question: str,
+    school_id: uuid.UUID,
+    course_id: Optional[uuid.UUID] = None,
+    k: int = 5,
+) -> list[dict]:
+    """Cosine similarity search over content_chunks scoped to school_id."""
+    vectors = await embed(client, [question], task_type="RETRIEVAL_QUERY")
+    query_vec = vectors[0]
+
+    if course_id:
+        sql = """
+            SELECT chunk_text, content_id, 1 - (embedding <=> %s::vector) AS score
+            FROM content_chunks
+            WHERE school_id = %s AND content_id = %s
+            ORDER BY embedding <=> %s::vector LIMIT %s
+        """
+        params = (query_vec, school_id, course_id, query_vec, k)
+    else:
+        sql = """
+            SELECT chunk_text, content_id, 1 - (embedding <=> %s::vector) AS score
+            FROM content_chunks
+            WHERE school_id = %s
+            ORDER BY embedding <=> %s::vector LIMIT %s
+        """
+        params = (query_vec, school_id, query_vec, k)
+
+    async with db.cursor() as cur:
+        await cur.execute(sql, params)
+        rows = await cur.fetchall()
+
+    return [
+        {"chunk_text": row[0], "content_id": str(row[1]), "score": float(row[2])}
+        for row in rows
+    ]
