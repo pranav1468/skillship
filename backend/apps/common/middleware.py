@@ -1,9 +1,35 @@
 """
-TenantMiddleware — injects request.school_id on every request.
+TenantMiddleware — exposes request.school_id on every request.
 
-Must run AFTER AuthenticationMiddleware so request.user is available.
-Views and managers use request.school_id to scope all queries.
+Why this is a SimpleLazyObject and not a plain attribute:
+    Django's AuthenticationMiddleware populates `request.user` (cookie-session
+    auth) eagerly. DRF's JWT authentication populates it *lazily*, inside the
+    view's dispatch — after every Django middleware has already run. If we
+    read request.user during __call__ and stash a plain `request.school_id`,
+    we capture an AnonymousUser for every JWT-authed request and bake in
+    `school_id = None` forever, even after DRF replaces request.user with
+    the real principal/teacher/etc.
+
+    Wrapping in SimpleLazyObject defers the lookup until first access. By
+    that time we are inside the view body, DRF has authenticated, and
+    request.user is the real user.
+
+Views and managers can therefore use request.school_id with confidence —
+it is the *current* request.user's school_id at the moment of access.
 """
+
+from __future__ import annotations
+
+from django.utils.functional import SimpleLazyObject
+
+
+def _resolve_school_id(request):
+    user = getattr(request, "user", None)
+    if user is None or not user.is_authenticated:
+        return None
+    # MAIN_ADMIN has school_id=None by design (the role/school check
+    # constraint in apps.accounts.models enforces this).
+    return getattr(user, "school_id", None)
 
 
 class TenantMiddleware:
@@ -11,11 +37,5 @@ class TenantMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Default: no tenant scope (anonymous users, MAIN_ADMIN)
-        request.school_id = None
-
-        if hasattr(request, "user") and request.user.is_authenticated:
-            # MAIN_ADMIN has school=NULL — they operate across all schools
-            request.school_id = request.user.school_id
-
+        request.school_id = SimpleLazyObject(lambda: _resolve_school_id(request))
         return self.get_response(request)
