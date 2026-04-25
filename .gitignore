@@ -48,3 +48,9 @@ Thumbs.db
 # --- Docker ---
 # keep compose files; ignore local overrides:
 docker-compose.override.yml
+
+# --- Claude Code ---
+.claude/
+
+# --- Local nested clone (artifact of initial setup) ---
+skillship/
