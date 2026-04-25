@@ -10,11 +10,8 @@ uvicorn[standard]>=0.27.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 
-# LLM
-anthropic>=0.40.0
-
-# Embeddings
-openai>=1.51.0
+# LLM and Embeddings (Gemini)
+google-genai>=1.0.0
 
 # Database and Vector Search
 psycopg[binary]>=3.1.18

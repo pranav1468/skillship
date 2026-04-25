@@ -1,78 +1,51 @@
 """
 File:    ai-service/app/routers/quiz.py
-Purpose: /quiz/generate + /quiz/adaptive-next endpoints.
-Owner:   Navanish
+Purpose: /quiz/generate, /quiz/adaptive-next, /quiz/grade-short endpoints.
 """
 
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends
+from app.deps import GeminiClient, verify_internal_key
+from app.engines import question_gen, adaptive_quiz, scoring
+from app.schemas.quiz import (
+    GenerateRequest, GenerateResponse,
+    AdaptiveNextRequest, AdaptiveNextResponse,
+    GradeShortRequest, GradeShortResponse,
+)
 
-router = APIRouter(prefix="/quiz")
-
-
-class GenerateQuizRequest(BaseModel):
-    """Request schema for quiz generation."""
-    topic: str
-    grade: str
-    count: int = 5
-    difficulty: str = "medium"
-    types: list[str] = ["multiple_choice"]
+router = APIRouter(prefix="/quiz", dependencies=[Depends(verify_internal_key)])
 
 
-class Question(BaseModel):
-    """Quiz question model."""
-    id: str
-    text: str
-    options: list[str]
-    correct_answer: str
-    difficulty: str
-    topic: str
-
-
-class AdaptiveNextRequest(BaseModel):
-    """Request schema for adaptive quiz next question."""
-    attempt_history: list[dict]
-    last_difficulty: str
-    last_correct: bool
-
-
-class AdaptiveNextResponse(BaseModel):
-    """Response schema for adaptive quiz next question."""
-    question: Question
-    difficulty: str
-
-
-@router.post("/generate", response_model=list[Question])
-async def generate_quiz(request: GenerateQuizRequest):
-    """
-    Generate quiz questions based on topic, grade, and parameters.
-    
-    Args:
-        request: Quiz generation parameters
-        
-    Returns:
-        List of generated quiz questions
-    """
-    # TODO: Implement question generation
-    # -> engines.question_gen.generate(...)
-    return []
+@router.post("/generate", response_model=GenerateResponse)
+async def generate_quiz(request: GenerateRequest, client: GeminiClient):
+    questions = await question_gen.generate(
+        client=client, topic=request.topic, grade=request.grade,
+        count=request.count, difficulty=request.difficulty,
+        types_=request.types, course_context=request.course_context,
+    )
+    return GenerateResponse(questions=questions)
 
 
 @router.post("/adaptive-next", response_model=AdaptiveNextResponse)
-async def get_adaptive_next(request: AdaptiveNextRequest):
-    """
-    Get the next adaptive quiz question based on attempt history.
-    
-    Args:
-        request: Attempt history and last question difficulty/result
-        
-    Returns:
-        Next question with adjusted difficulty
-    """
-    # TODO: Implement adaptive quiz engine
-    # -> engines.adaptive_quiz.next(...)
-    return {
-        "question": None,
-        "difficulty": "medium"
-    }
+async def get_adaptive_next(request: AdaptiveNextRequest, client: GeminiClient):
+    next_diff = adaptive_quiz.next_difficulty(
+        attempt_history=request.attempt_history,
+        last_difficulty=request.last_difficulty,
+        last_correct=request.last_correct,
+    )
+    questions = await question_gen.generate(
+        client=client, topic=request.topic, grade=request.grade,
+        count=1, difficulty=next_diff,
+        types_=request.types, course_context=request.course_context,
+    )
+    return AdaptiveNextResponse(question=questions[0], difficulty=next_diff)
 
+
+@router.post("/grade-short", response_model=GradeShortResponse)
+async def grade_short_answer(request: GradeShortRequest, client: GeminiClient):
+    result = await scoring.grade_short(
+        client=client,
+        question_text=request.question_text,
+        rubric=request.rubric,
+        student_answer=request.student_answer,
+    )
+    return GradeShortResponse(**result)

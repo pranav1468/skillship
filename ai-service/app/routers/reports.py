@@ -1,35 +1,21 @@
 """
 File:    ai-service/app/routers/reports.py
-Purpose: /reports/weekly endpoint — generates the weekly principal report.
-Owner:   Navanish
+Purpose: /reports/weekly — weekly principal report via analyst_agent.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from app.agents import analyst_agent
+from app.deps import GeminiClient, verify_internal_key
 
-router = APIRouter(prefix="/reports")
-
-
-class SchoolMetric(BaseModel):
-    """School performance metric."""
-    name: str
-    value: float
-
-
-class SchoolSnapshot(BaseModel):
-    """School-wide snapshot for report generation."""
-    metrics: list[SchoolMetric]
-    top_risks: list[str]
-    standout_students: list[str]
+router = APIRouter(prefix="/reports", dependencies=[Depends(verify_internal_key)])
 
 
 class WeeklyReportRequest(BaseModel):
-    """Request schema for weekly report generation."""
-    school_snapshot: SchoolSnapshot
+    school_snapshot: dict
 
 
 class WeeklyReportResponse(BaseModel):
-    """Response schema for weekly report."""
     summary_md: str
     highlights: list[str]
     concerns: list[str]
@@ -37,22 +23,6 @@ class WeeklyReportResponse(BaseModel):
 
 
 @router.post("/weekly", response_model=WeeklyReportResponse)
-async def generate_weekly_report(request: WeeklyReportRequest):
-    """
-    Generate a weekly principal report based on school metrics and student data.
-    
-    Args:
-        request: School snapshot with metrics, risks, and standout students
-        
-    Returns:
-        Weekly report with summary, highlights, concerns, and recommendations
-    """
-    # TODO: Implement weekly report generation with analyst_agent
-    # -> agents.analyst_agent.weekly(school_snapshot)
-    return {
-        "summary_md": "",
-        "highlights": [],
-        "concerns": [],
-        "recommendations": []
-    }
-
+async def generate_weekly_report(request: WeeklyReportRequest, client: GeminiClient):
+    result = await analyst_agent.weekly(client=client, school_snapshot=request.school_snapshot)
+    return WeeklyReportResponse(**result)
