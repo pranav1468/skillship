@@ -2,10 +2,35 @@
 File:    ai-service/app/config.py
 Purpose: Typed settings loaded from env vars (pydantic-settings).
 Owner:   Navanish
-TODO:    class Settings(BaseSettings):
-           ANTHROPIC_API_KEY, OPENAI_API_KEY (optional),
-           MODEL_NAME = "claude-opus-4-6",
-           AI_SERVICE_INTERNAL_KEY, ALLOWED_ORIGINS,
-           EMBEDDING_MODEL, PGVECTOR_URL,
-           LOG_LEVEL = "INFO".
 """
+
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    """Application settings loaded from environment variables."""
+
+    # Gemini
+    GEMINI_API_KEY: str
+
+    # Model Configuration
+    MODEL_NAME: str = "gemini-1.5-flash"
+    EMBEDDING_MODEL: str = "models/text-embedding-004"
+
+    # Service Configuration
+    AI_SERVICE_INTERNAL_KEY: str
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8000"]
+
+    # Database
+    PGVECTOR_URL: str
+
+    # Logging
+    LOG_LEVEL: str = "INFO"
+
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
+
+
+# Global settings instance
+settings = Settings()

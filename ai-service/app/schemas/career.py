@@ -1,7 +1,25 @@
 """
 File:    ai-service/app/schemas/career.py
-Purpose: Pydantic models for /career/ask request/response.
-Owner:   Navanish
-TODO:    class CareerAskRequest(BaseModel): student_context, question, history.
-         class CareerAskResponse: answer, suggested_paths, confidence, citations.
+Purpose: Pydantic models for /career/ask endpoint.
 """
+
+from __future__ import annotations
+from pydantic import BaseModel, Field
+
+
+class CareerAskRequest(BaseModel):
+    student_context: dict   # grade, subjects, scores, interests, etc.
+    question: str
+    history: list[dict] = []   # [{"role": "user"|"assistant", "content": "..."}]
+
+
+class Citation(BaseModel):
+    label: str
+    detail: str
+
+
+class CareerAskResponse(BaseModel):
+    answer: str
+    suggested_paths: list[str]
+    confidence: float = Field(ge=0.0, le=1.0)
+    citations: list[Citation]

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skillship AI Service — Build Overview</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1f2e 0%, #0f1117 100%);
+      border-bottom: 1px solid #2d3748;
+      padding: 40px 60px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    header h1 span {
+      color: #6366f1;
+    }
+
+    header p {
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-blue  { background: #1e3a5f; color: #60a5fa; border: 1px solid #2563eb44; }
+    .badge-green { background: #14532d; color: #4ade80; border: 1px solid #16a34a44; }
+    .badge-purple{ background: #3b0764; color: #c084fc; border: 1px solid #9333ea44; }
+    .badge-amber { background: #451a03; color: #fbbf24; border: 1px solid #d9770644; }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    section { margin-bottom: 48px; }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2d3748;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 .icon { font-size: 1.1rem; }
+
+    /* Architecture diagram */
+    .arch {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .arch-box {
+      background: #0f1117;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 14px 20px;
+      text-align: center;
+      min-width: 130px;
+    }
+
+    .arch-box .label {
+      font-size: 0.7rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .arch-box .name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .arch-box.highlight { border-color: #6366f1; }
+    .arch-box.highlight .name { color: #818cf8; }
+
+    .arrow {
+      color: #374151;
+      font-size: 1.4rem;
+      padding: 0 8px;
+    }
+
+    /* Stack cards */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .stack-card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .stack-card .tech { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; }
+    .stack-card .role { font-size: 0.78rem; color: #64748b; margin-top: 4px; }
+
+    /* Endpoints */
+    .endpoint-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .endpoint {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .method {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 4px;
+      background: #1e3a5f;
+      color: #60a5fa;
+      border: 1px solid #2563eb55;
+      white-space: nowrap;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .endpoint-info { flex: 1; }
+    .endpoint-path { font-size: 0.9rem; font-weight: 600; color: #a5b4fc; font-family: monospace; }
+    .endpoint-desc { font-size: 0.82rem; color: #64748b; margin-top: 3px; }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .dot-green { background: #4ade80; box-shadow: 0 0 6px #4ade8088; }
+    .dot-yellow { background: #fbbf24; box-shadow: 0 0 6px #fbbf2488; }
+
+    /* File tree */
+    .file-tree {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.82rem;
+    }
+
+    .tree-line { line-height: 1.9; }
+    .tree-dir  { color: #60a5fa; font-weight: 600; }
+    .tree-file { color: #94a3b8; }
+    .tree-file.done { color: #4ade80; }
+    .tree-file.stub { color: #fbbf24; }
+    .tree-indent { padding-left: 20px; display: block; }
+
+    /* Pipeline */
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .pipe-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .pipe-line-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 32px;
+    }
+
+    .pipe-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #1e3a5f;
+      border: 1px solid #2563eb55;
+      color: #60a5fa;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .pipe-connector {
+      width: 2px;
+      flex: 1;
+      min-height: 20px;
+      background: #2d3748;
+      margin: 4px 0;
+    }
+
+    .pipe-content {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .pipe-content .ptitle { font-size: 0.88rem; font-weight: 600; color: #e2e8f0; }
+    .pipe-content .pfile  { font-size: 0.75rem; color: #6366f1; font-family: monospace; margin-top: 2px; }
+    .pipe-content .pdesc  { font-size: 0.78rem; color: #64748b; margin-top: 4px; }
+
+    /* Sample payloads */
+    .sample-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width: 700px) { .sample-grid { grid-template-columns: 1fr; } }
+
+    .sample-card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .sample-header {
+      background: #0f1117;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .sample-header .s-method {
+      font-size: 0.68rem; font-weight: 700;
+      background: #1e3a5f; color: #60a5fa;
+      padding: 2px 8px; border-radius: 3px;
+    }
+
+    .sample-header .s-path { font-size: 0.8rem; color: #a5b4fc; font-family: monospace; }
+
+    pre {
+      padding: 14px 16px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      overflow-x: auto;
+      line-height: 1.6;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    pre .key    { color: #7dd3fc; }
+    pre .str    { color: #86efac; }
+    pre .num    { color: #fcd34d; }
+    pre .bool   { color: #f9a8d4; }
+
+    /* Summary table */
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.5px; color: #475569; padding: 10px 14px;
+      border-bottom: 1px solid #2d3748;
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid #1e293b; font-size: 0.85rem; }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { color: #a5b4fc; font-family: monospace; }
+    td.green { color: #4ade80; }
+    td.yellow { color: #fbbf24; }
+
+    .key-value-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media(max-width: 600px) { .key-value-grid { grid-template-columns: 1fr; } }
+
+    .kv-card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .kv-card .kv-key { font-size: 0.72rem; color: #475569; text-transform: uppercase; letter-spacing: 0.4px; }
+    .kv-card .kv-val { font-size: 0.92rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; font-family: monospace; }
+
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: #334155;
+      font-size: 0.8rem;
+      border-top: 1px solid #1e293b;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Skillship <span>AI Service</span> — Build Overview</h1>
+  <p>FastAPI · Gemini 1.5 Flash · pgvector · Python 3.12</p>
+  <div class="badge-row">
+    <span class="badge badge-green">8/8 Endpoints Live</span>
+    <span class="badge badge-blue">google-genai SDK</span>
+    <span class="badge badge-purple">pgvector RAG</span>
+    <span class="badge badge-amber">Hybrid Risk Engine</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Architecture -->
+  <section>
+    <h2><span class="icon">🏗️</span> Architecture</h2>
+    <div class="arch">
+      <div class="arch-flow">
+        <div class="arch-box">
+          <div class="label">Client</div>
+          <div class="name">Django Backend</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="arch-box highlight">
+          <div class="label">X-Internal-Key</div>
+          <div class="name">FastAPI Service</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="arch-box">
+          <div class="label">LLM</div>
+          <div class="name">Gemini 1.5 Flash</div>
+        </div>
+      </div>
+      <div class="arch-flow" style="margin-top:16px;">
+        <div style="width:130px"></div>
+        <div class="arrow" style="transform:rotate(90deg); margin:0 65px;">↓</div>
+      </div>
+      <div class="arch-flow" style="margin-top:8px;">
+        <div style="flex:1"></div>
+        <div class="arch-box">
+          <div class="label">Vector DB</div>
+          <div class="name">pgvector (PG)</div>
+        </div>
+        <div class="arrow">+</div>
+        <div class="arch-box">
+          <div class="label">Embeddings</div>
+          <div class="name">text-embedding-004</div>
+        </div>
+        <div style="flex:1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section>
+    <h2><span class="icon">⚙️</span> Tech Stack</h2>
+    <div class="stack-grid">
+      <div class="stack-card"><div class="tech">FastAPI</div><div class="role">Web framework + auto OpenAPI docs</div></div>
+      <div class="stack-card"><div class="tech">google-genai</div><div class="role">Gemini LLM + embeddings (new SDK)</div></div>
+      <div class="stack-card"><div class="tech">gemini-1.5-flash</div><div class="role">Primary LLM for all agents</div></div>
+      <div class="stack-card"><div class="tech">text-embedding-004</div><div class="role">768-dim semantic embeddings</div></div>
+      <div class="stack-card"><div class="tech">pgvector</div><div class="role">Cosine similarity vector search</div></div>
+      <div class="stack-card"><div class="tech">psycopg3 (async)</div><div class="role">Async PostgreSQL driver</div></div>
+      <div class="stack-card"><div class="tech">pydantic v2</div><div class="role">Request/response validation</div></div>
+      <div class="stack-card"><div class="tech">pypdf</div><div class="role">PDF text extraction for RAG</div></div>
+    </div>
+  </section>
+
+  <!-- Endpoints -->
+  <section>
+    <h2><span class="icon">🔌</span> API Endpoints</h2>
+    <div class="endpoint-list">
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">GET</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/healthz</div>
+          <div class="endpoint-desc">Health check — returns service status + DB connectivity. No auth required.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/tutor/ask</div>
+          <div class="endpoint-desc">RAG-grounded tutor. Retrieves top-5 course chunks → Gemini answers with citations. Requires pgvector DB.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/career/ask</div>
+          <div class="endpoint-desc">CareerPilot agent. Personalised career path suggestions for Indian students using student profile + Gemini.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/quiz/generate</div>
+          <div class="endpoint-desc">Generates MCQ / TF / SHORT questions for any topic, grade, and difficulty using Gemini JSON mode.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/quiz/adaptive-next</div>
+          <div class="endpoint-desc">IRT-lite engine computes next difficulty from attempt history, then generates one question at that level.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/quiz/grade-short</div>
+          <div class="endpoint-desc">LLM-grades SHORT-answer responses against a rubric. Returns score (0–1) + one-line feedback.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/content/tag</div>
+          <div class="endpoint-desc">Auto-tags uploaded content with topics, grade level, difficulty, and prerequisites using Gemini.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/reports/weekly</div>
+          <div class="endpoint-desc">Analyst agent generates a principal-facing weekly report with highlights, concerns, and recommendations.</div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="status-dot dot-green"></div>
+        <div class="method">POST</div>
+        <div class="endpoint-info">
+          <div class="endpoint-path">/api/risk/scan</div>
+          <div class="endpoint-desc">Hybrid risk scanner: hard rules (attendance, score drop, logins) flag students, LLM adds nuance + reasoning.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RAG Pipeline -->
+  <section>
+    <h2><span class="icon">🔍</span> RAG Pipeline (Tutor)</h2>
+    <div class="pipeline">
+
+      <div class="pipe-step">
+        <div class="pipe-line-wrap">
+          <div class="pipe-num">1</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="ptitle">Chunk</div>
+          <div class="pfile">rag/chunker.py</div>
+          <div class="pdesc">PDF or article text split into 800-char overlapping chunks (100-char overlap), word-boundary aware.</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line-wrap">
+          <div class="pipe-num">2</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="ptitle">Embed + Upsert</div>
+          <div class="pfile">rag/embedder.py</div>
+          <div class="pdesc">Each chunk embedded via Gemini text-embedding-004 (768-dim). Upserted into content_chunks table, scoped to school_id + content_id.</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line-wrap">
+          <div class="pipe-num">3</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="ptitle">Retrieve</div>
+          <div class="pfile">rag/retriever.py</div>
+          <div class="pdesc">Student question embedded with task_type=RETRIEVAL_QUERY. Top-5 chunks fetched via ivfflat cosine index, filtered to school_id (tenant isolation).</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line-wrap">
+          <div class="pipe-num">4</div>
+        </div>
+        <div class="pipe-content">
+          <div class="ptitle">Generate Answer</div>
+          <div class="pfile">agents/tutor_agent.py</div>
+          <div class="pdesc">Chunks injected into Gemini context. System prompt (tutor.md) enforces citation and no direct quiz answers. Returns answer + references.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Adaptive Quiz -->
+  <section>
+    <h2><span class="icon">📊</span> Adaptive Quiz Engine</h2>
+    <div class="key-value-grid">
+      <div class="kv-card"><div class="kv-key">Algorithm</div><div class="kv-val">IRT-lite (Item Response Theory)</div></div>
+      <div class="kv-card"><div class="kv-key">Start Level</div><div class="kv-val">medium</div></div>
+      <div class="kv-card"><div class="kv-key">Go Harder After</div><div class="kv-val">2 consecutive correct</div></div>
+      <div class="kv-card"><div class="kv-key">Go Easier After</div><div class="kv-val">2 consecutive wrong</div></div>
+      <div class="kv-card"><div class="kv-key">Max Jump</div><div class="kv-val">1 level per question</div></div>
+      <div class="kv-card"><div class="kv-key">Levels</div><div class="kv-val">easy → medium → hard</div></div>
+    </div>
+  </section>
+
+  <!-- Risk Agent -->
+  <section>
+    <h2><span class="icon">⚠️</span> Risk Agent — Hybrid Logic</h2>
+    <table>
+      <tr><th>Rule</th><th>Threshold</th><th>Flag</th></tr>
+      <tr>
+        <td>Attendance</td>
+        <td style="color:#94a3b8">below 75%</td>
+        <td><span class="badge badge-amber">attendance</span></td>
+      </tr>
+      <tr>
+        <td>Avg Score (critical)</td>
+        <td style="color:#94a3b8">below 40%</td>
+        <td><span class="badge badge-amber">failing</span></td>
+      </tr>
+      <tr>
+        <td>Avg Score (low)</td>
+        <td style="color:#94a3b8">below 55%</td>
+        <td><span class="badge badge-amber">failing</span></td>
+      </tr>
+      <tr>
+        <td>Score trend</td>
+        <td style="color:#94a3b8">last 3 avg &lt; prev 3 avg − 10%</td>
+        <td><span class="badge badge-amber">score_trending_down</span></td>
+      </tr>
+      <tr>
+        <td>Engagement</td>
+        <td style="color:#94a3b8">0 logins this week</td>
+        <td><span class="badge badge-amber">disengagement</span></td>
+      </tr>
+    </table>
+    <p style="font-size:0.8rem;color:#475569;margin-top:12px;">Flagged students are batched into a single Gemini call that assigns level (low/medium/high/critical), kind, reason, and evidence.</p>
+  </section>
+
+  <!-- File Tree -->
+  <section>
+    <h2><span class="icon">📁</span> File Structure</h2>
+    <div class="file-tree">
+      <div class="tree-line"><span class="tree-dir">ai-service/</span></div>
+      <div class="tree-indent">
+        <div class="tree-line"><span class="tree-dir">app/</span></div>
+        <div class="tree-indent">
+          <div class="tree-line"><span class="tree-file done">✓ main.py</span> <span style="color:#374151">— startup, Gemini client, DB, routers</span></div>
+          <div class="tree-line"><span class="tree-file done">✓ config.py</span> <span style="color:#374151">— pydantic settings (GEMINI_API_KEY, PGVECTOR_URL…)</span></div>
+          <div class="tree-line"><span class="tree-file done">✓ deps.py</span> <span style="color:#374151">— GeminiClient, DB, verify_internal_key deps</span></div>
+
+          <div class="tree-line" style="margin-top:8px"><span class="tree-dir">agents/</span></div>
+          <div class="tree-indent">
+            <div class="tree-line"><span class="tree-file done">✓ tutor_agent.py</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ career_pilot.py</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ analyst_agent.py</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ risk_agent.py</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ content_agent.py</span></div>
+            <div class="tree-line"><span class="tree-file stub">◌ orchestrator.py</span> <span style="color:#374151">— LangGraph router (pending)</span></div>
+          </div>
+
+          <div class="tree-line" style="margin-top:8px"><span class="tree-dir">rag/</span></div>
+          <div class="tree-indent">
+            <div class="tree-line"><span class="tree-file done">✓ chunker.py</span> <span style="color:#374151">— 800-char overlap chunks, PDF support</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ embedder.py</span> <span style="color:#374151">— Gemini embeddings + pgvector upsert</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ retriever.py</span> <span style="color:#374151">— cosine search scoped to school_id</span></div>
+          </div>
+
+          <div class="tree-line" style="margin-top:8px"><span class="tree-dir">engines/</span></div>
+          <div class="tree-indent">
+            <div class="tree-line"><span class="tree-file done">✓ question_gen.py</span> <span style="color:#374151">— Gemini JSON mode question generation</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ adaptive_quiz.py</span> <span style="color:#374151">— IRT-lite difficulty engine (pure logic)</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ scoring.py</span> <span style="color:#374151">— LLM grading for SHORT answers</span></div>
+          </div>
+
+          <div class="tree-line" style="margin-top:8px"><span class="tree-dir">routers/</span></div>
+          <div class="tree-indent">
+            <div class="tree-line"><span class="tree-file done">✓ tutor.py &nbsp;&nbsp;&nbsp;→ POST /api/tutor/ask</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ career.py &nbsp;&nbsp;→ POST /api/career/ask</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ quiz.py &nbsp;&nbsp;&nbsp;&nbsp;→ POST /api/quiz/generate|adaptive-next|grade-short</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ content.py &nbsp;→ POST /api/content/tag</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ reports.py &nbsp;→ POST /api/reports/weekly</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ risk.py &nbsp;&nbsp;&nbsp;&nbsp;→ POST /api/risk/scan</span></div>
+          </div>
+
+          <div class="tree-line" style="margin-top:8px"><span class="tree-dir">prompts/</span></div>
+          <div class="tree-indent">
+            <div class="tree-line"><span class="tree-file done">✓ tutor.md</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ career_pilot.md</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ analyst.md</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ question_gen.md</span></div>
+          </div>
+
+          <div class="tree-line" style="margin-top:8px"><span class="tree-dir">schemas/</span></div>
+          <div class="tree-indent">
+            <div class="tree-line"><span class="tree-file done">✓ common.py &nbsp;— Difficulty, QuestionType, Option, Question</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ quiz.py &nbsp;&nbsp;&nbsp;— GenerateRequest/Response, AdaptiveNextRequest…</span></div>
+            <div class="tree-line"><span class="tree-file done">✓ career.py &nbsp;— CareerAskRequest/Response, Citation</span></div>
+          </div>
+        </div>
+
+        <div class="tree-line" style="margin-top:8px"><span class="tree-file done">✓ requirements.txt</span></div>
+        <div class="tree-line"><span class="tree-file done">✓ .env.example</span></div>
+        <div class="tree-line"><span class="tree-file done">✓ Dockerfile</span></div>
+      </div>
+
+      <div class="tree-line" style="margin-top:8px"><span class="tree-dir">data/migrations_raw/</span></div>
+      <div class="tree-indent">
+        <div class="tree-line"><span class="tree-file done">✓ 001_pgvector.sql</span> <span style="color:#374151">— content_chunks table + ivfflat index (vector(768))</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sample Payloads -->
+  <section>
+    <h2><span class="icon">🧪</span> Sample Test Payloads</h2>
+    <div class="sample-grid">
+
+      <div class="sample-card">
+        <div class="sample-header">
+          <span class="s-method">POST</span>
+          <span class="s-path">/api/quiz/generate</span>
+        </div>
+        <pre>{
+  <span class="key">"topic"</span>: <span class="str">"Photosynthesis"</span>,
+  <span class="key">"grade"</span>: <span class="str">"Grade 8"</span>,
+  <span class="key">"count"</span>: <span class="num">3</span>,
+  <span class="key">"difficulty"</span>: <span class="str">"medium"</span>,
+  <span class="key">"types"</span>: [<span class="str">"mcq"</span>, <span class="str">"tf"</span>]
+}</pre>
+      </div>
+
+      <div class="sample-card">
+        <div class="sample-header">
+          <span class="s-method">POST</span>
+          <span class="s-path">/api/career/ask</span>
+        </div>
+        <pre>{
+  <span class="key">"student_context"</span>: {
+    <span class="key">"grade"</span>: <span class="str">"Grade 11"</span>,
+    <span class="key">"stream"</span>: <span class="str">"Science (PCB)"</span>,
+    <span class="key">"avg_score"</span>: <span class="str">"78%"</span>,
+    <span class="key">"interests"</span>: <span class="str">"biology"</span>
+  },
+  <span class="key">"question"</span>: <span class="str">"What career after Class 12?"</span>,
+  <span class="key">"history"</span>: []
+}</pre>
+      </div>
+
+      <div class="sample-card">
+        <div class="sample-header">
+          <span class="s-method">POST</span>
+          <span class="s-path">/api/risk/scan</span>
+        </div>
+        <pre>{
+  <span class="key">"students"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="str">"student-001"</span>,
+      <span class="key">"attendance"</span>: <span class="num">0.55</span>,
+      <span class="key">"quiz_scores"</span>: [<span class="num">0.8</span>,<span class="num">0.5</span>,<span class="num">0.3</span>,<span class="num">0.2</span>],
+      <span class="key">"recent_stats"</span>: {
+        <span class="key">"logins_this_week"</span>: <span class="num">0</span>
+      }
+    }
+  ]
+}</pre>
+      </div>
+
+      <div class="sample-card">
+        <div class="sample-header">
+          <span class="s-method">POST</span>
+          <span class="s-path">/api/quiz/grade-short</span>
+        </div>
+        <pre>{
+  <span class="key">"question_text"</span>: <span class="str">"Why are leaves green?"</span>,
+  <span class="key">"rubric"</span>: <span class="str">"Mention chlorophyll
+reflects green light."</span>,
+  <span class="key">"student_answer"</span>: <span class="str">"Leaves have
+chlorophyll which reflects
+green light."</span>
+}</pre>
+      </div>
+
+    </div>
+
+    <p style="margin-top:14px;font-size:0.8rem;color:#475569;">
+      All protected endpoints require header: <code style="color:#a5b4fc;background:#1a1f2e;padding:2px 6px;border-radius:4px;">X-Internal-Key: dev-secret-key-change-in-prod</code>
+    </p>
+  </section>
+
+  <!-- What's next -->
+  <section>
+    <h2><span class="icon">🚧</span> What's Next</h2>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="tech" style="color:#fbbf24">orchestrator.py</div>
+        <div class="role">LangGraph StateGraph to route multi-step requests across agents</div>
+      </div>
+      <div class="stack-card">
+        <div class="tech" style="color:#fbbf24">PostgreSQL Setup</div>
+        <div class="role">Fix local Postgres password → run 001_pgvector.sql → enable /tutor/ask</div>
+      </div>
+      <div class="stack-card">
+        <div class="tech" style="color:#fbbf24">Content Ingestion</div>
+        <div class="role">POST endpoint to chunk + embed uploaded PDFs/articles into pgvector</div>
+      </div>
+      <div class="stack-card">
+        <div class="tech" style="color:#fbbf24">Django Integration</div>
+        <div class="role">Wire Django backend to call this service with X-Internal-Key header</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Generated for Skillship AI Service &nbsp;·&nbsp; Branch: ai_service &nbsp;·&nbsp; April 2026
+</footer>
+
+</body>
+</html>
